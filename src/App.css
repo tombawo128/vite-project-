@@ -107,6 +107,18 @@ select {
   margin-bottom: 15px;
 }
 
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.section-title h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
 .page-title h1,
 .page-title h2 {
   margin: 0;
@@ -219,6 +231,25 @@ th {
   padding: 8px 11px;
   border: 1px solid #c9ddc9;
   background: #edf5ed;
+}
+
+.report-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.report-filters label {
+  display: grid;
+  gap: 5px;
+  color: #39485a;
+  font-size: 13px;
+}
+
+.form-error {
+  color: #a12622;
 }
 
 .modal-overlay {

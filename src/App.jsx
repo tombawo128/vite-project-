@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import DashboardPage from './pages/DashboardPage.jsx'
 import CustomersPage from './pages/CustomersPage.jsx'
 import SalesPage from './pages/SalesPage.jsx'
@@ -23,11 +23,20 @@ const startingTasks = [
   { id: 4, title: 'Send invoice to Olivia Chen', assignedTo: 'James Wilson', due: 'Oct 18', done: true },
 ]
 
+function dateDaysAgo(days) {
+  const date = new Date()
+  date.setDate(date.getDate() - days)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 const startingTransactions = [
-  { id: 1, customer: 'Amara Johnson', description: 'Service package', date: 'Today', method: 'Card', amount: 280 },
-  { id: 2, customer: 'Noah Williams', description: 'Monthly membership', date: 'Today', method: 'Cash', amount: 120 },
-  { id: 3, customer: 'Olivia Chen', description: 'Consultation', date: 'Yesterday', method: 'Card', amount: 85 },
-  { id: 4, customer: 'Ethan Patel', description: 'Product purchase', date: 'Oct 14', method: 'Transfer', amount: 64 },
+  { id: 1, customer: 'Amara Johnson', description: 'Service package', date: dateDaysAgo(0), method: 'Card', amount: 280 },
+  { id: 2, customer: 'Noah Williams', description: 'Monthly membership', date: dateDaysAgo(0), method: 'Cash', amount: 120 },
+  { id: 3, customer: 'Olivia Chen', description: 'Consultation', date: dateDaysAgo(1), method: 'Card', amount: 85 },
+  { id: 4, customer: 'Ethan Patel', description: 'Product purchase', date: dateDaysAgo(7), method: 'Transfer', amount: 64 },
 ]
 
 const pageNames = ['Dashboard', 'Customers', 'Sales', 'Tasks', 'Reports']
@@ -40,6 +49,7 @@ function App() {
   const [search, setSearch] = useState('')
   const [formType, setFormType] = useState('')
   const [message, setMessage] = useState('')
+  const messageTimer = useRef(null)
 
   const searchText = search.toLowerCase()
   const matchingCustomers = customers.filter((customer) =>
@@ -55,9 +65,12 @@ function App() {
   const pendingTasks = tasks.filter((task) => !task.done).length
   const completedTasks = tasks.filter((task) => task.done).length
 
+  useEffect(() => () => window.clearTimeout(messageTimer.current), [])
+
   function notify(text) {
     setMessage(text)
-    window.setTimeout(() => setMessage(''), 2500)
+    window.clearTimeout(messageTimer.current)
+    messageTimer.current = window.setTimeout(() => setMessage(''), 2500)
   }
 
   function openPage(nextPage) {
@@ -99,7 +112,7 @@ function App() {
           id: Date.now(),
           customer: name,
           description: String(formData.get('description') || 'Sale'),
-          date: 'Today',
+          date: String(formData.get('date') || dateDaysAgo(0)),
           method: String(formData.get('method')),
           amount,
         },
@@ -139,13 +152,14 @@ function App() {
       return <CustomersPage customers={matchingCustomers} onAdd={() => setFormType('customer')} onToggleArchived={toggleCustomer} />
     }
     if (page === 'Sales') {
-      return <SalesPage transactions={matchingTransactions} salesTotal={salesTotal} onAdd={() => setFormType('sale')} />
+      const visibleSalesTotal = matchingTransactions.reduce((total, transaction) => total + transaction.amount, 0)
+      return <SalesPage transactions={matchingTransactions} salesTotal={visibleSalesTotal} onAdd={() => setFormType('sale')} />
     }
     if (page === 'Tasks') {
       return <TasksPage tasks={matchingTasks} onAdd={() => setFormType('task')} onToggleTask={toggleTask} />
     }
     if (page === 'Reports') {
-      return <ReportsPage salesTotal={salesTotal} transactions={transactions} completedTasks={completedTasks} pendingTasks={pendingTasks} />
+      return <ReportsPage transactions={transactions} completedTasks={completedTasks} pendingTasks={pendingTasks} />
     }
     return <DashboardPage {...sharedData} onOpenPage={openPage} />
   }
@@ -162,16 +176,18 @@ function App() {
       <Navigation pages={pageNames} currentPage={page} onNavigate={openPage} />
 
       <main>
-        <div className="toolbar">
-          <label>
-            Search {page.toLowerCase()}
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder={`Search ${page.toLowerCase()}...`}
-            />
-          </label>
-        </div>
+        {page !== 'Reports' && (
+          <div className="toolbar">
+            <label>
+              Search {page.toLowerCase()}
+              <input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder={`Search ${page.toLowerCase()}...`}
+              />
+            </label>
+          </div>
+        )}
         {showPage()}
         <p className="note">Demo only. This app does not save data or connect to a real business.</p>
       </main>

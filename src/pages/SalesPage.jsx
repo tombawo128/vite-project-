@@ -7,7 +7,7 @@ function SalesPage({ transactions, salesTotal, onAdd }) {
         <div><h2>Sales</h2><p>Record sales and view transaction history.</p></div>
         <button onClick={onAdd}>Record sale</button>
       </div>
-      <p className="total-line"><strong>Total recorded:</strong> ${salesTotal.toLocaleString('en-US')}</p>
+      <p className="total-line"><strong>Total for shown transactions:</strong> ${salesTotal.toLocaleString('en-US')}</p>
       <TransactionTable transactions={transactions} />
     </>
   )

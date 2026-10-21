@@ -1,5 +1,11 @@
 function AddRecordForm({ type, onClose, onSubmit }) {
   const title = type === 'customer' ? 'Add customer' : type === 'task' ? 'Add task' : 'Record sale'
+  const today = new Date()
+  const defaultDate = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, '0'),
+    String(today.getDate()).padStart(2, '0'),
+  ].join('-')
 
   return (
     <div className="modal-overlay">
@@ -29,6 +35,7 @@ function AddRecordForm({ type, onClose, onSubmit }) {
           <>
             <label>Description<input name="description" /></label>
             <label>Amount<input name="amount" type="number" min="0.01" step="0.01" required /></label>
+            <label>Date<input name="date" type="date" defaultValue={defaultDate} required /></label>
             <label>
               Payment method
               <select name="method"><option>Card</option><option>Cash</option><option>Transfer</option></select>
