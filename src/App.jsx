@@ -7,6 +7,7 @@ import ReportsPage from './pages/ReportsPage.jsx'
 import Navigation from './components/Navigation.jsx'
 import AddRecordForm from './components/AddRecordForm.jsx'
 import LoginPage from './pages/login-page.jsx'
+import SignUpPage from './pages/sign-up-page.jsx'
 import './App.css'
 
 const startingCustomers = [
@@ -51,6 +52,24 @@ function App() {
   const [formType, setFormType] = useState('')
   const [message, setMessage] = useState('')
   const messageTimer = useRef(null)
+  const [user, setUser] = useState(null)
+  const [authView, setAuthView] = useState('login')
+
+
+
+  if (!user){
+    return authView === 'login' ? (
+      <LoginPage 
+      onLogin={setUser} onSwitch={()=> 
+        setAuthView('signup')} 
+        />
+    ) : (
+      <SignUpPage 
+      onSignUp={setUser} 
+      onSwitch={()=> setAuthView('login')} 
+      />
+    )
+  }
 
   const searchText = search.toLowerCase()
   const matchingCustomers = customers.filter((customer) =>
