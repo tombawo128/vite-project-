@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { logIn } from '../utils/auth.js'
+import { LogIn } from '../utils/auth.js'
 
 function LoginPage({ onLogin, onSwitch }) {
   const [error, setError] = useState('')
