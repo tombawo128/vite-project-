@@ -6,6 +6,8 @@ import TasksPage from './pages/TasksPage.jsx'
 import ReportsPage from './pages/ReportsPage.jsx'
 import Navigation from './components/Navigation.jsx'
 import AddRecordForm from './components/AddRecordForm.jsx'
+import LoginPage from './pages/LoginPage.jsx'
+import SignupPage from './pages/SignUpPage.jsx'
 import './App.css'
 
 const startingCustomers = [
