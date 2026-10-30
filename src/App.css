@@ -6,10 +6,128 @@
 }
 
 header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   padding: 16px 20px;
   border-top: 5px solid #2768a5;
   border-bottom: 1px solid #cbd2d9;
   background: #eaf2f8;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.header-user-name {
+  font-size: 13px;
+  color: #39485a;
+  font-weight: 500;
+}
+
+.logout-button {
+  padding: 5px 12px;
+  font-size: 13px;
+  border: 1px solid #aeb8c2;
+  border-radius: 3px;
+  background: white;
+  color: #26364a;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.logout-button:hover {
+  background: #fce8e8;
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
+/* ── Auth pages — match the main app look ───────────────────────────────────── */
+
+/* Constrain the auth .app to a narrower width, still centred */
+.auth-app {
+  width: min(100% - 32px, 460px);
+}
+
+/* The form inside main — uses the existing .simple-form styles */
+.auth-inner-form {
+  max-width: 100%;
+  margin-top: 4px;
+}
+
+/* Primary action button — mirrors the nav .selected style */
+.auth-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border: 1px solid #2768a5;
+  border-radius: 3px;
+  background: #2768a5;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.auth-primary-btn:hover:not(:disabled) {
+  background: #1f5490;
+  border-color: #1f5490;
+}
+
+.auth-primary-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Inline text link — used for "No account? Sign up" */
+.link-button {
+  border: none;
+  background: none;
+  padding: 0;
+  color: #2768a5;
+  font-size: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.link-button:hover {
+  color: #1f5490;
+  background: none;
+}
+
+/* Loading state shown while session is being checked */
+.auth-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 32px 20px;
+  color: #39485a;
+  font-size: 14px;
+}
+
+/* Dark spinner (for light backgrounds) */
+.auth-spinner-dark {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #cbd2d9;
+  border-top-color: #2768a5;
+  border-radius: 50%;
+  animation: auth-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes auth-spin {
+  to { transform: rotate(360deg); }
 }
 
 header h2 {

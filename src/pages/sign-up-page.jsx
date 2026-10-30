@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { signUp } from '../utils/auth.js'
 
-
 function SignUpPage({ onSignUp, onSwitch }) {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -37,33 +36,96 @@ function SignUpPage({ onSignUp, onSwitch }) {
   }
 
   return (
-    <form className="simple-form auth-form" onSubmit={handleSubmit}>
-      <div>
-        <h2>Create an account</h2>
-        <p>Sign up to start managing customers, sales and tasks.</p>
-      </div>
-      <label>
-        Full name
-        <input name="name" type="text" autoComplete="name" required />
-      </label>
-      <label>
-        Email
-        <input name="email" type="email" autoComplete="email" required />
-      </label>
-      <label>
-        Password
-        <input name="password" type="password" autoComplete="new-password" minLength="6" required />
-      </label>
-      <label>
-        Confirm password
-        <input name="confirm" type="password" autoComplete="new-password" required />
-      </label>
-      {error && <p className="form-error" role="alert">{error}</p>}
-      <button type="submit" disabled={busy}>{busy ? 'Creating account...' : 'Sign up'}</button>
-      <p className="auth-switch">
-        Already have an account? <button type="button" className="link-button" onClick={onSwitch}>Log in</button>
-      </p>
-    </form>
+    <div className="app auth-app">
+      {/* Same header style as the main app */}
+      <header>
+        <div>
+          <h1>Small Business Manager</h1>
+          <p>Create your free account</p>
+        </div>
+      </header>
+
+      {/* Same nav-bar style — "Sign up" active, "Log in" inactive */}
+      <nav aria-label="Authentication navigation">
+        <button type="button" onClick={onSwitch}>Log in</button>
+        <button className="selected" type="button">Sign up</button>
+      </nav>
+
+      <main>
+        <div className="page-title">
+          <div>
+            <h2>Create an account</h2>
+            <p>Sign up to start managing customers, sales and tasks.</p>
+          </div>
+        </div>
+
+        <form className="simple-form auth-inner-form" onSubmit={handleSubmit} noValidate>
+          <label htmlFor="signup-name">
+            Full name
+            <input
+              id="signup-name"
+              name="name"
+              type="text"
+              autoComplete="name"
+              placeholder="Jane Smith"
+              required
+            />
+          </label>
+
+          <label htmlFor="signup-email">
+            Email address
+            <input
+              id="signup-email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              placeholder="you@example.com"
+              required
+            />
+          </label>
+
+          <label htmlFor="signup-password">
+            Password
+            <input
+              id="signup-password"
+              name="password"
+              type="password"
+              autoComplete="new-password"
+              placeholder="At least 6 characters"
+              minLength="6"
+              required
+            />
+          </label>
+
+          <label htmlFor="signup-confirm">
+            Confirm password
+            <input
+              id="signup-confirm"
+              name="confirm"
+              type="password"
+              autoComplete="new-password"
+              placeholder="••••••••"
+              required
+            />
+          </label>
+
+          {error && (
+            <p className="form-error" role="alert">⚠ {error}</p>
+          )}
+
+          <button type="submit" className="auth-primary-btn" disabled={busy}>
+            {busy ? <><span className="auth-spinner-dark" /> Creating account…</> : 'Create account'}
+          </button>
+        </form>
+
+        <p className="note">
+          Already have an account?{' '}
+          <button type="button" className="link-button" onClick={onSwitch}>
+            Log in
+          </button>
+        </p>
+      </main>
+    </div>
   )
 }
 

@@ -8,6 +8,7 @@ import Navigation from './components/Navigation.jsx'
 import AddRecordForm from './components/AddRecordForm.jsx'
 import LoginPage from './pages/login-page.jsx'
 import SignUpPage from './pages/sign-up-page.jsx'
+import { getCurrentUser, onAuthChange, logOut } from './utils/auth.js'
 import './App.css'
 
 const startingCustomers = [
@@ -52,25 +53,66 @@ function App() {
   const [formType, setFormType] = useState('')
   const [message, setMessage] = useState('')
   const messageTimer = useRef(null)
+
+  // Auth state
   const [user, setUser] = useState(null)
+  const [authLoading, setAuthLoading] = useState(true)   // true while checking session
   const [authView, setAuthView] = useState('login')
 
+  // ── useEffect must be above any early returns (Rules of Hooks) ───────────────
+  useEffect(() => {
+    // 1. Check if a session already exists (page refresh / returning user)
+    getCurrentUser().then((u) => {
+      setUser(u)
+      setAuthLoading(false)
+    })
 
+    // 2. Subscribe to future auth state changes (login, logout, token refresh)
+    const unsubscribe = onAuthChange((u) => {
+      setUser(u)
+      setAuthLoading(false)
+    })
 
-  if (!user){
+    return () => {
+      unsubscribe()
+      window.clearTimeout(messageTimer.current)
+    }
+  }, [])
+
+  // ── Loading splash (checking Supabase session) ────────────────────────────────
+  if (authLoading) {
+    return (
+      <div className="app">
+        <header className="app-header">
+          <div>
+            <h1>Small Business Manager</h1>
+            <p>Sample project</p>
+          </div>
+        </header>
+        <div className="auth-loading">
+          <span className="auth-spinner-dark" />
+          <span>Loading…</span>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Auth guard ────────────────────────────────────────────────────────────────
+  if (!user) {
     return authView === 'login' ? (
-      <LoginPage 
-      onLogin={setUser} onSwitch={()=> 
-        setAuthView('signup')} 
-        />
+      <LoginPage
+        onLogin={(u, msg) => { setUser(u); if (msg) setMessage(msg) }}
+        onSwitch={() => setAuthView('signup')}
+      />
     ) : (
-      <SignUpPage 
-      onSignUp={setUser} 
-      onSwitch={()=> setAuthView('login')} 
+      <SignUpPage
+        onSignUp={(u, msg) => { setUser(u); if (msg) setMessage(msg) }}
+        onSwitch={() => setAuthView('login')}
       />
     )
   }
 
+  // ── Derived data ──────────────────────────────────────────────────────────────
   const searchText = search.toLowerCase()
   const matchingCustomers = customers.filter((customer) =>
     `${customer.name} ${customer.email}`.toLowerCase().includes(searchText),
@@ -84,8 +126,6 @@ function App() {
   const salesTotal = transactions.reduce((total, transaction) => total + transaction.amount, 0)
   const pendingTasks = tasks.filter((task) => !task.done).length
   const completedTasks = tasks.filter((task) => task.done).length
-
-  useEffect(() => () => window.clearTimeout(messageTimer.current), [])
 
   function notify(text) {
     setMessage(text)
@@ -156,6 +196,13 @@ function App() {
     ))
   }
 
+  async function handleLogout() {
+    await logOut()
+    setUser(null)
+    setAuthView('login')
+    setPage('Dashboard')
+  }
+
   function showPage() {
     const sharedData = {
       customers: matchingCustomers,
@@ -190,6 +237,10 @@ function App() {
         <div>
           <h1>Small Business Manager</h1>
           <p>Sample project</p>
+        </div>
+        <div className="header-user">
+          <span className="header-user-name">👤 {user.name}</span>
+          <button className="logout-button" onClick={handleLogout}>Log out</button>
         </div>
       </header>
 
